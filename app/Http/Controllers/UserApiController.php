@@ -276,78 +276,68 @@ class UserApiController extends Controller
         ], 200);
     }
 
-    public function registerUserWithPassport(Request $req)
+    public function registerUser(Request $req)
     {
-
-        //validate the request
         $rules = [
-
             'name' => 'required',
             'email' => 'required|email|unique:users',
+            'gender' => 'required',
+            'lookingGender' => 'required',
+            'age' => 'required',
             'password' => 'required|min:6',
-
         ];
 
         $customMessage = [
-
             'name.required' => 'Name is required',
             'email.required' => 'Email is required',
             'email.email' => 'Email is invalid',
             'email.unique' => 'Email is already taken',
             'password.required' => 'Password is required',
             'password.min' => 'Password must be at least 6 characters',
-
+            'age.required' => 'Age is required',
+            'gender.required' => 'Gender is required',
         ];
 
         $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
         if ($validation->fails()) {
-
             return response()->json([
-
                 'message' => $validation->errors(),
-
             ], 422);
         }
 
         User::create([
-
             'name' => $req->name,
             'email' => $req->email,
+            'age' => $req->age,
+            'gender' => $req->gender,
+            'lookingGender' => $req->lookingGender,
             'password' => Hash::make($req->password),
-
         ]);
 
         if (Auth::attempt(['email' => $req->email, 'password' => $req->password])) {
-
             $user = User::where('email', $req->email)->first();
-
             $access_token = $user->createToken($req->email)->accessToken;
-
             User::where('email', $req->email)->update([
-
                 'access_token' => $access_token,
-
             ]);
 
             return response()->json([
-
                 'message' => 'User registered Successfully',
                 'access_token' => $access_token,
-
+                'user' => $user,
+                'code' => 200
             ], 201);
         } else {
 
             return response()->json([
-
-                'message' => 'Opps! Something went wrong',
-
+                'message' => 'Register account fail!',
             ], 422);
         }
     }
 
-    public function loginUserWithPassport(Request $req)
+    public function loginUser(Request $req)
     {
         //validate the request
         $rules = [
