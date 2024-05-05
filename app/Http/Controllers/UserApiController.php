@@ -20,26 +20,24 @@ class UserApiController extends Controller
     public function allUser()
     {
 
-        $users=User::all();
+        $users = User::all();
         return response()->json($users);
-
     }
 
     public function userDetails($id)
     {
 
-        $userDetails=User::find($id);
+        $userDetails = User::find($id);
 
-        $userProduct=Product::where('user_id',$id)->get();
+        $userProduct = Product::where('user_id', $id)->get();
 
         return response()->json([
 
-           'userDetails'=>$userDetails,
-           'userProduct'=>$userProduct,
-           'name'=>$userDetails->name,
+            'userDetails' => $userDetails,
+            'userProduct' => $userProduct,
+            'name' => $userDetails->name,
 
         ]);
-
     }
 
     //create single user
@@ -47,403 +45,349 @@ class UserApiController extends Controller
     {
 
         //validate the request
-        $rules=[
+        $rules = [
 
-            'name'=>'required',
-            'email'=>'required|email|unique:users',
-            'password'=>'required|min:6',
-
-        ];
-
-        $customMessage=[
-
-            'name.required'=>'Name is required',
-            'email.required'=>'Email is required',
-            'email.email'=>'Email is invalid',
-            'email.unique'=>'Email is already taken',
-            'password.required'=>'Password is required',
-            'password.min'=>'Password must be at least 6 characters',
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
 
         ];
 
-        $validation=Validator::make($req->all(),$rules,$customMessage);
+        $customMessage = [
+
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email is invalid',
+            'email.unique' => 'Email is already taken',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 6 characters',
+
+        ];
+
+        $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
 
             return response()->json([
 
-                'message'=>$validation->errors(),
+                'message' => $validation->errors(),
 
-            ],422);
-
+            ], 422);
         }
 
         User::create([
 
-            'name'=>$req->name,
-            'email'=>$req->email,
-            'password'=>Hash::make($req->password),
+            'name' => $req->name,
+            'email' => $req->email,
+            'password' => Hash::make($req->password),
 
         ]);
 
         //201 request means data created successfully
         return response()->json([
 
-            'message'=>'User Created Successfully',
+            'message' => 'User Created Successfully',
 
-        ],201);
-
+        ], 201);
     }
     public function createMultipleUser(Request $req)
     {
 
-        $data=$req->all();
+        $data = $req->all();
 
         //validate the request
-        $rules=[
+        $rules = [
 
-            'users.*.name'=>'required',
-            'users.*.email'=>'required|email|unique:users',
-            'users.*.password'=>'required|min:6',
-
-        ];
-
-        $customMessage=[
-
-            'users.*.name.required'=>'Name is required',
-            'users.*.email.required'=>'Email is required',
-            'users.*.email.email'=>'Email is invalid',
-            'users.*.email.unique'=>'Email is already taken',
-            'users.*.password.required'=>'Password is required',
-            'users.*.password.min'=>'Password must be at least 6 characters',
+            'users.*.name' => 'required',
+            'users.*.email' => 'required|email|unique:users',
+            'users.*.password' => 'required|min:6',
 
         ];
 
-        $validation=Validator::make($req->all(),$rules,$customMessage);
+        $customMessage = [
+
+            'users.*.name.required' => 'Name is required',
+            'users.*.email.required' => 'Email is required',
+            'users.*.email.email' => 'Email is invalid',
+            'users.*.email.unique' => 'Email is already taken',
+            'users.*.password.required' => 'Password is required',
+            'users.*.password.min' => 'Password must be at least 6 characters',
+
+        ];
+
+        $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
 
             return response()->json([
 
-                'message'=>$validation->errors(),
+                'message' => $validation->errors(),
 
-            ],422);
-
+            ], 422);
         }
 
-        foreach($data['users'] as $user)
-        {
+        foreach ($data['users'] as $user) {
 
             User::create([
 
-                'name'=>$user['name'],
-                'email'=>$user['email'],
-                'password'=>Hash::make($user['password']),
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'password' => Hash::make($user['password']),
 
             ]);
-
         }
-     
+
 
         //201 request means data created successfully
         return response()->json([
 
-            'message'=>'User Created Successfully',
+            'message' => 'User Created Successfully',
 
-        ],201);
-
-
+        ], 201);
     }
 
-    public function updateUser(Request $req,$id)
+    public function updateUser(Request $req, $id)
     {
 
         //validate the request
-        $rules=[
+        $rules = [
 
-            'name'=>'required',
-            'password'=>'required|min:6',
-
-        ];
-
-        $customMessage=[
-
-            'name.required'=>'Name is required',
-            'password.required'=>'Password is required',
-            'password.min'=>'Password must be at least 6 characters',
+            'name' => 'required',
+            'password' => 'required|min:6',
 
         ];
 
-        $validation=Validator::make($req->all(),$rules,$customMessage);
+        $customMessage = [
+
+            'name.required' => 'Name is required',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 6 characters',
+
+        ];
+
+        $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
 
             return response()->json([
 
-                'message'=>$validation->errors(),
+                'message' => $validation->errors(),
 
-            ],422);
-
+            ], 422);
         }
 
-        User::where('id',$id)->Update([
+        User::where('id', $id)->Update([
 
-            'name'=>$req->name,
-            'password'=>Hash::make($req->password),
+            'name' => $req->name,
+            'password' => Hash::make($req->password),
 
         ]);
 
         //202 request means data updated successfully
         return response()->json([
 
-            'message'=>'User Updated Successfully',
+            'message' => 'User Updated Successfully',
 
-        ],202);
+        ], 202);
     }
 
-    public function updateUserSingleRecord(Request $req,$id)
+    public function updateUserSingleRecord(Request $req, $id)
     {
 
-          //validate the request
-          $rules=[
+        //validate the request
+        $rules = [
 
-            'name'=>'required',
-
-        ];
-
-        $customMessage=[
-
-            'name.required'=>'Name is required',
+            'name' => 'required',
 
         ];
 
-        $validation=Validator::make($req->all(),$rules,$customMessage);
+        $customMessage = [
+
+            'name.required' => 'Name is required',
+
+        ];
+
+        $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
 
             return response()->json([
 
-                'message'=>$validation->errors(),
+                'message' => $validation->errors(),
 
-            ],422);
-
+            ], 422);
         }
 
-        User::where('id',$id)->Update([
+        User::where('id', $id)->Update([
 
-            'name'=>$req->name,
+            'name' => $req->name,
 
         ]);
 
         //202 request means data updated successfully
         return response()->json([
 
-            'message'=>'User Updated Successfully',
+            'message' => 'User Updated Successfully',
 
-        ],202);
-
-
+        ], 202);
     }
 
     public function deleteUser($id)
     {
 
-        User::where('id',$id)->delete();
+        User::where('id', $id)->delete();
 
         return response()->json([
 
-            'message'=>'User Deleted Successfully',
+            'message' => 'User Deleted Successfully',
 
-        ],200);
-    
+        ], 200);
     }
 
     public function deleteUserWithJson(Request $req)
     {
 
-        $data=$req->all();
+        $data = $req->all();
 
-        User::where('id',$data['id'])->delete();
+        User::where('id', $data['id'])->delete();
 
         return response()->json([
 
-            'message'=>'User Deleted Successfully',
+            'message' => 'User Deleted Successfully',
 
-        ],200);
-
+        ], 200);
     }
 
     public function deleteMultipleUser($ids)
     {
 
-        $ids=explode(',',$ids);
+        $ids = explode(',', $ids);
 
-        User::whereIn('id',$ids)->delete();
+        User::whereIn('id', $ids)->delete();
 
         return response()->json([
 
-            'message'=>'User Deleted Successfully',
+            'message' => 'User Deleted Successfully',
 
-        ],200);
-
+        ], 200);
     }
 
     public function registerUserWithPassport(Request $req)
     {
 
         //validate the request
-        $rules=[
+        $rules = [
 
-            'name'=>'required',
-            'email'=>'required|email|unique:users',
-            'password'=>'required|min:6',
-
-        ];
-
-        $customMessage=[
-
-            'name.required'=>'Name is required',
-            'email.required'=>'Email is required',
-            'email.email'=>'Email is invalid',
-            'email.unique'=>'Email is already taken',
-            'password.required'=>'Password is required',
-            'password.min'=>'Password must be at least 6 characters',
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
 
         ];
 
-        $validation=Validator::make($req->all(),$rules,$customMessage);
+        $customMessage = [
+
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email is invalid',
+            'email.unique' => 'Email is already taken',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 6 characters',
+
+        ];
+
+        $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
 
             return response()->json([
 
-                'message'=>$validation->errors(),
+                'message' => $validation->errors(),
 
-            ],422);
-
+            ], 422);
         }
 
         User::create([
 
-            'name'=>$req->name,
-            'email'=>$req->email,
-            'password'=>Hash::make($req->password),
+            'name' => $req->name,
+            'email' => $req->email,
+            'password' => Hash::make($req->password),
 
         ]);
 
-        if(Auth::attempt(['email'=>$req->email,'password'=>$req->password]))
-        {
+        if (Auth::attempt(['email' => $req->email, 'password' => $req->password])) {
 
-            $user=User::where('email',$req->email)->first();
+            $user = User::where('email', $req->email)->first();
 
-            $access_token=$user->createToken($req->email)->accessToken;
+            $access_token = $user->createToken($req->email)->accessToken;
 
-            User::where('email',$req->email)->update([
+            User::where('email', $req->email)->update([
 
-                'access_token'=>$access_token,
+                'access_token' => $access_token,
 
             ]);
 
             return response()->json([
 
-                'message'=>'User registered Successfully',
-                'access_token'=>$access_token,
+                'message' => 'User registered Successfully',
+                'access_token' => $access_token,
 
-            ],201);
-
-
-        }
-        else
-        {
+            ], 201);
+        } else {
 
             return response()->json([
 
-                'message'=>'Opps! Something went wrong',
+                'message' => 'Opps! Something went wrong',
 
-            ],422);
-
+            ], 422);
         }
-
-
     }
 
     public function loginUserWithPassport(Request $req)
     {
         //validate the request
-        $rules=[
-
-            'email'=>'required|email|exists:users',
-            'password'=>'required|min:6',
-
+        $rules = [
+            'email' => 'required|email|exists:users',
+            'password' => 'required|min:6',
         ];
 
-        $customMessage=[
-
-            'email.required'=>'Email is required',
-            'email.email'=>'Email is invalid',
-            'email.exists'=>'Email do not exists',
-            'password.required'=>'Password is required',
-            'password.min'=>'Password must be at least 6 characters',
-
+        $customMessage = [
+            'email.required' => 'Email is required',
+            'email.email' => 'Email is invalid',
+            'email.exists' => 'Email do not exists',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 6 characters',
         ];
 
-        $validation=Validator::make($req->all(),$rules,$customMessage);
+        $validation = Validator::make($req->all(), $rules, $customMessage);
 
         //here 422 means unprocessable entity
-        if($validation->fails())
-        {
-
+        if ($validation->fails()) {
             return response()->json([
-
-                'message'=>$validation->errors(),
-
-            ],422);
-
+                'message' => $validation->errors(),
+            ], 422);
         }
-
-        if(Auth::attempt(['email'=>$req->email,'password'=>$req->password]))
-        {
-
-            $user=User::where('email',$req->email)->first();
-
-            $access_token=$user->createToken($req->email)->accessToken;
-
-            User::where('email',$req->email)->update([
-
-                'access_token'=>$access_token,
-
+        if (Auth::attempt(['email' => $req->email, 'password' => $req->password])) {
+            $user = User::where('email', $req->email)->first();
+            $access_token = $user->createToken($req->email)->accessToken;
+            User::where('email', $req->email)->update([
+                'access_token' => $access_token,
             ]);
-
             return response()->json([
+                'message' => 'User login successfully',
+                'access_token' => $access_token,
+                'user' => $user,
+                'code' => 200
 
-                'message'=>'User successfully login',
-                'access_token'=>$access_token,
-
-            ],201);
-
-
-        }
-        else
-        {
-
+            ], 200);
+        } else {
             return response()->json([
-
-                'message'=>'Invalid email or password',
-
-            ],422);
-
+                'message' => 'Invalid email or password',
+            ], 422);
         }
-   
     }
-
 }

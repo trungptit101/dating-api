@@ -16,19 +16,13 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        
+
         //dummy data for inserted into database
         $users=[
             [
-                'name'=>'Sajeeb Chakraborty',
-                'email'=>'sajeebchakraborty.cse2000@gmail.com',
-                'password'=> '123456',
-
-            ],
-            [
-                'name'=>'Robin Chakraborty',
-                'email'=>'robincb.symphony@gmail.com',
-                'password'=>'123456',
+                'name'=>'Nguyen Tat Trung',
+                'email'=>'trungptit7@gmail.com',
+                'password'=> bcrypt('123456'),
 
             ]
         ];
