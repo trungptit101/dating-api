@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 //import the Controller
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\ProductApiController;
+use App\Http\Controllers\QuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,28 +22,6 @@ use App\Http\Controllers\ProductApiController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-//GET Request
-Route::get('/users', UserApiController::class . '@allUser');
-Route::get('/users/{id}', UserApiController::class . '@userDetails');
-
-//POST Request
-Route::post('/add-user', UserApiController::class . '@createUser');
-Route::post('/add-multiple-user', UserApiController::class . '@createMultipleUser');
-
-//PUT Request
-Route::put('/update-user/{id}', UserApiController::class . '@updateUser');
-
-//PATCH Request
-Route::patch('/update-user-single-record/{id}', UserApiController::class . '@updateUserSingleRecord');
-
-//DELETE Request
-Route::delete('/delete-user/{id}', UserApiController::class . '@deleteUser');
-Route::delete('/delete-user-with-json', UserApiController::class . '@deleteUserWithJson');
-Route::delete('/delete-multiple-user/{ids}', UserApiController::class . '@deleteMultipleUser');
-
-//Authentication check
-Route::get('/product-list', ProductApiController::class . '@productList');
 
 /*
     Laravel Passport Installation Steps
@@ -68,3 +47,21 @@ Route::get('/product-list', ProductApiController::class . '@productList');
 //Laravel Passport
 Route::post('/register', UserApiController::class . '@registerUser');
 Route::post('/login', UserApiController::class . '@loginUser');
+
+// question
+
+Route::group(
+    [
+        'prefix' => 'question',
+        'as' => 'question.',
+        'middleware' => ['auth:api'],
+    ],
+    function () {
+        Route::get('/list', QuestionController::class . '@listQuestion');
+        Route::get('/questionnaire', QuestionController::class . '@listQuestionnaire');
+        Route::post('/create', QuestionController::class . '@createQuestion');
+        Route::put('/update/{id}', QuestionController::class . '@updateQuestion');
+        Route::put('/update-questionaire-user/{id}', QuestionController::class . '@updateQuestionaireUser');
+        Route::delete('/delete/{id}', QuestionController::class . '@deleteQuestion');
+    }
+);

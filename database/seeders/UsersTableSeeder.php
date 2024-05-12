@@ -20,11 +20,11 @@ class UsersTableSeeder extends Seeder
         //dummy data for inserted into database
         $users=[
             [
-                'name'=>'Nguyen Tat Trung',
-                'email'=>'trungptit7@gmail.com',
+                'name'=>'admin',
+                'email'=>'admin@gmail.com',
                 'password'=> bcrypt('123456'),
-
-            ]
+                'role' => 1,
+            ],
         ];
 
         User::insert($users);
