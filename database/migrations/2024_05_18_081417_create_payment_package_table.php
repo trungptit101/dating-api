@@ -16,7 +16,7 @@ class CreatePaymentPackageTable extends Migration
         Schema::create('payment_package', function (Blueprint $table) {
             $table->id();
             $table->integer("months")->default(1);
-            $table->text("price")->default(0);
+            $table->double("price")->default(0);
             $table->text("unit")->default("VND");
             $table->timestamps();
         });

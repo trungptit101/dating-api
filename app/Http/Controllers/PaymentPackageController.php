@@ -18,7 +18,7 @@ class PaymentPackageController extends Controller
 
     public function listPackage()
     {
-        $paymentPackage = PaymentPackage::all();
+        $paymentPackage = PaymentPackage::query()->orderBy("price")->get();
         return response()->json([
             "data" => $paymentPackage,
             "code" => 200

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\PaymentPackageController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,6 @@ Route::post('/register', UserApiController::class . '@registerUser');
 Route::post('/login', UserApiController::class . '@loginUser');
 
 // question
-
 Route::group(
     [
         'prefix' => 'question',
@@ -91,7 +91,7 @@ Route::group(
     }
 );
 
-// candidate
+// payment package
 Route::group(
     [
         'prefix' => 'payment-package',
@@ -103,5 +103,30 @@ Route::group(
         Route::post('/create', PaymentPackageController::class . '@createPackage');
         Route::put('/update/{id}', PaymentPackageController::class . '@updatePackage');
         Route::delete('/delete/{id}', PaymentPackageController::class . '@deletePackage');
+    }
+);
+
+// order
+Route::group(
+    [
+        'prefix' => 'order',
+        'as' => 'order.',
+        'middleware' => ['auth:api'],
+    ],
+    function () {
+        Route::post('/create', HomeController::class . '@createOrder');
+        Route::get('/detail', HomeController::class . '@getOrderDetail');
+    }
+);
+
+// partner
+Route::group(
+    [
+        'prefix' => 'partner',
+        'as' => 'partner.',
+        'middleware' => ['auth:api'],
+    ],
+    function () {
+        Route::get('/suggestion', HomeController::class . '@getPartnerSuggestion');
     }
 );
