@@ -149,4 +149,19 @@ class UserApiController extends Controller
         $user = User::find($id);
         return response()->json($user, 200);
     }
+
+    public function updateUserProfile(Request $request)
+    {
+        Auth::user()->name = $request->input("name");
+        Auth::user()->age = $request->input("age");
+        Auth::user()->favorite = $request->input("favorite");
+        Auth::user()->weight = $request->input("weight");
+        Auth::user()->height = $request->input("height");
+        Auth::user()->skin_color = $request->input("skin_color");
+        Auth::user()->blood_group = $request->input("blood_group");
+        Auth::user()->eye_color = $request->input("eye_color");
+        Auth::user()->avatar = $request->input("avatar");
+        Auth::user()->save();
+        return response()->json(Auth::user(), 200);
+    }
 }

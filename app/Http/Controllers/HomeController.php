@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 //import the model
 use App\Models\User;
+use App\Models\UserDating;
 use App\Models\QuestionnaireUser;
 use App\Models\Question;
 use App\Models\Orders;
@@ -101,6 +102,7 @@ class HomeController extends Controller
         if (empty($order))
             return response()->json([
                 "message" => "fail!",
+                "order" => $order
             ], 400);
         if ($order->payment_status != Orders::PAYMENT_STATUS_INPROGRESS) {
             $statusMsg = "";
@@ -126,11 +128,36 @@ class HomeController extends Controller
         ], 200);
     }
 
-    public function getPartnerSuggestion(Request $request)
+    public function getPartnerSuggestion()
     {
-        $partnersSuggestion = User::query()->where("gender", Auth::user()->lookingGender)->get();
+        $partnersSuggestion = User::query()
+            ->where("role", User::Candidate)
+            ->where("id", "!=", Auth::user()->id)
+            ->where("gender", Auth::user()->lookingGender)
+            ->get();
         return response()->json([
             "data" => $partnersSuggestion
+        ], 200);
+    }
+
+    public function processDating(Request $request)
+    {
+        $partnersId = $request->input("partnersId");
+        UserDating::create([
+            "userId" => Auth::user()->id,
+            "partnerId" => implode(',', $partnersId),
+            "isComplete" => false,
+        ]);
+        return response()->json([
+            "message" => "Dating process is being done!"
+        ], 200);
+    }
+
+    public function getProcessDetail(Request $request)
+    {
+        $process = UserDating::query()->where("userId", Auth::user()->id)->first();
+        return response()->json([
+            "process" => $process
         ], 200);
     }
 }

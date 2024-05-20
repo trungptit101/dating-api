@@ -76,6 +76,7 @@ Route::group(
     ],
     function () {
         Route::get('/detail/{id}', UserApiController::class . '@getUserDetail');
+        Route::post('/profile', UserApiController::class . '@updateUserProfile');
     }
 );
 
@@ -128,5 +129,7 @@ Route::group(
     ],
     function () {
         Route::get('/suggestion', HomeController::class . '@getPartnerSuggestion');
+        Route::post('/process/dating', HomeController::class . '@processDating');
+        Route::get('/process/detail', HomeController::class . '@getProcessDetail');
     }
 );

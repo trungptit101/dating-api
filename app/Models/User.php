@@ -20,7 +20,21 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'is_complete_survey', 'gender', 'lookingGender', 'age', 'role'
+        'name',
+        'email',
+        'password',
+        'is_complete_survey',
+        'gender',
+        'lookingGender',
+        'age',
+        'role',
+        'avatar',
+        'favorite',
+        'weight',
+        'height',
+        'skin_color',
+        'blood_group',
+        'eye_color'
     ];
 
     const Admin = 1;
