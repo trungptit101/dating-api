@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 //import the model
 use App\Models\User;
+use App\Models\UserDating;
 use App\Models\QuestionnaireUser;
 use App\Models\Question;
 
@@ -13,6 +14,7 @@ use App\Models\Question;
 use Illuminate\Support\Facades\Validator;
 
 use Auth;
+use Facade\FlareClient\View;
 use Hash;
 
 class UserApiController extends Controller
@@ -20,11 +22,63 @@ class UserApiController extends Controller
     public function listCandidate(Request $request)
     {
         $candidates = User::query()
-            ->where("role", User::Candidate)
-            ->orderBy("id", "asc")
+            ->with("dating")
+            ->select("users.*")
+            ->join("questionnaire_user", "questionnaire_user.userId", "=", "users.id")
+            ->where("role", User::Candidate);
+        if ($request->input("filter")) {
+            $filter = json_decode($request->input("filter"));
+            foreach ($filter as $key => $condition) {
+                $candidates = $candidates->where("questionnaire_user.questionId", "=", $key);
+                foreach (json_decode($condition) as $item) {
+                    $candidates->whereJsonContains("questionnaire_user.answers", $item);
+                }
+            }
+        }
+        $candidates = $candidates->distinct("users.id")
+            ->orderBy("users.id", "asc")
             ->paginate($request->input("perPage"), ["*"], "page", $request->input("page"));
         return response()->json([
             "data" => $candidates,
+            "code" => 200
+        ], 200);
+    }
+
+    public function listRequestDating(Request $request)
+    {
+        $requestsDating = UserDating::all();
+        $requestsDating = collect($requestsDating)->map(function ($request) {
+            $user = User::find($request["userId"]);
+            $partnerIds = explode(",", $request["partnerId"]);
+            $partners = User::query()->whereIn("id", $partnerIds)->get();
+            $request["user"] = $user;
+            $request["partners"] = $partners;
+            return $request;
+        })->values();
+
+        return response()->json([
+            "data" => $requestsDating,
+            "code" => 200
+        ], 200);
+    }
+
+    public function updateProcessDating($id)
+    {
+        $requestsDating = UserDating::find($id);
+        $requestsDating->isComplete = UserDating::complete;
+        $requestsDating->save();
+        return response()->json([
+            "message" => "Complete process dating successfully!",
+        ], 200);
+    }
+
+    public function deleteCandidate($id)
+    {
+        User::query()
+            ->where("id", $id)
+            ->delete();
+        return response()->json([
+            "message" => "Delete candidate successfully!",
             "code" => 200
         ], 200);
     }
@@ -35,6 +89,7 @@ class UserApiController extends Controller
             "name" => "required",
             "email" => "required|email|unique:users",
             "gender" => "required",
+            "phone" => "required",
             "lookingGender" => "required",
             "age" => "required",
             "password" => "required|min:6",
@@ -43,6 +98,7 @@ class UserApiController extends Controller
         $customMessage = [
             "name.required" => "Name is required",
             "email.required" => "Email is required",
+            "phone.required" => "Phone is required",
             "email.email" => "Email is invalid",
             "email.unique" => "Email is already taken",
             "password.required" => "Password is required",
@@ -64,6 +120,7 @@ class UserApiController extends Controller
             "name" => $req->name,
             "email" => $req->email,
             "age" => $req->age,
+            "phone" => $req->phone,
             "gender" => $req->gender,
             "lookingGender" => $req->lookingGender,
             "password" => Hash::make($req->password),
@@ -154,6 +211,7 @@ class UserApiController extends Controller
     {
         Auth::user()->name = $request->input("name");
         Auth::user()->age = $request->input("age");
+        Auth::user()->phone = $request->input("phone");
         Auth::user()->favorite = $request->input("favorite");
         Auth::user()->weight = $request->input("weight");
         Auth::user()->height = $request->input("height");

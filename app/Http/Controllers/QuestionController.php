@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 //import the model
 use App\Models\Question;
 use App\Models\QuestionnaireUser;
+use App\Models\FilterSurvey;
 
 //import the Validator
 use Illuminate\Support\Facades\Validator;
@@ -17,9 +18,56 @@ class QuestionController extends Controller
 {
     public function listQuestion(Request $request)
     {
-        $questions = Question::query()->orderBy("id", "asc")->get();
+        $questions = Question::query()
+            ->orderBy("id", "asc")
+            ->paginate($request->input("perPage"), ["*"], "page", $request->input("page"));;
         return response()->json([
             "data" => $questions,
+            "code" => 200
+        ], 200);
+    }
+
+    public function getSettingsFilter(Request $request)
+    {
+        $settings = FilterSurvey::query()->first();
+        return response()->json([
+            "data" => $settings,
+            "code" => 200
+        ], 200);
+    }
+
+    public function getQuestionSettingsFilter(Request $request)
+    {
+        $settings = FilterSurvey::query()->first();
+        if (isset($settings)) {
+            $questionIds = json_decode($settings->questions_id);
+            $questions = Question::query()->whereIn("id", $questionIds)->get();
+        } else {
+            $questions = [];
+        }
+        $questions = collect($questions)->map(function ($question) {
+            $question->options = json_decode($question->options);
+            return $question;
+        })->values();
+        return response()->json([
+            "questions" => $questions,
+            "code" => 200
+        ], 200);
+    }
+
+    public function upSertSettingsFilter(Request $request)
+    {
+        if ($request->input("id")) {
+            $settings = FilterSurvey::find($request->input("id"));
+            $settings->questions_id = json_encode($request->input("questionIds"));
+            $settings->save();
+        } else {
+            $settings = FilterSurvey::create([
+                "questions_id" => json_encode($request->input("questionIds")),
+            ]);
+        }
+        return response()->json([
+            "data" => $settings,
             "code" => 200
         ], 200);
     }

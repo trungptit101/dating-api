@@ -57,4 +57,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function dating()
+    {
+        return $this->hasOne('App\Models\UserDating', 'userId', 'id');
+    }
 }

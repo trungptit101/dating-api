@@ -64,6 +64,9 @@ Route::group(
         Route::put('/update/{id}', QuestionController::class . '@updateQuestion');
         Route::put('/update-questionaire-user/{id}', QuestionController::class . '@updateQuestionaireUser');
         Route::delete('/delete/{id}', QuestionController::class . '@deleteQuestion');
+        Route::get('/settings-filter', QuestionController::class . '@getSettingsFilter');
+        Route::get('/questions/settings', QuestionController::class . '@getQuestionSettingsFilter');
+        Route::post('/up-sert-settings-filter', QuestionController::class . '@upSertSettingsFilter');
     }
 );
 
@@ -88,7 +91,10 @@ Route::group(
         'middleware' => ['auth:api'],
     ],
     function () {
-        Route::get('/list', UserApiController::class . '@listCandidate');
+        Route::get('/list', UserApiController::class . '@listCandidate')->middleware("CheckAdmin");
+        Route::delete('/delete/{id}', UserApiController::class . '@deleteCandidate');
+        Route::get('/dating-requests/list', UserApiController::class . '@listRequestDating')->middleware("CheckAdmin");
+        Route::post('/dating-process/update/{id}', UserApiController::class . '@updateProcessDating')->middleware("CheckAdmin");
     }
 );
 
