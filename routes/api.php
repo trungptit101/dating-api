@@ -139,3 +139,15 @@ Route::group(
         Route::get('/process/detail', HomeController::class . '@getProcessDetail');
     }
 );
+
+// partner
+Route::group(
+    [
+        'prefix' => 'analysic',
+        'as' => 'analysic.',
+        'middleware' => ['auth:api', 'CheckAdmin'],
+    ],
+    function () {
+        Route::get('/index', HomeController::class . '@getAnalysic');
+    }
+);

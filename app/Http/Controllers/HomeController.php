@@ -20,6 +20,50 @@ use Facade\Ignition\Support\Packagist\Package;
 
 class HomeController extends Controller
 {
+    public function getAnalysic(Request $request)
+    {
+        $ordersDataVND = Orders::select(\DB::raw('month(updated_at) as month'), \DB::raw('SUM(price) as totalMoney'))
+            ->whereYear('updated_at', $request->input("year"))
+            ->where('payment_status', Orders::PAYMENT_STATUS_COMPLETE)
+            ->where('unit', 'VND')
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->pluck('totalMoney', 'month')
+            ->toArray();
+        $ordersDataUSD = Orders::select(\DB::raw('month(updated_at) as month'), \DB::raw('SUM(price) as totalMoney'))
+            ->whereYear('updated_at', $request->input("year"))
+            ->where('payment_status', Orders::PAYMENT_STATUS_COMPLETE)
+            ->where('unit', 'USD')
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->pluck('totalMoney', 'month')
+            ->toArray();
+        $users = User::select(\DB::raw('month(created_at) as month'), \DB::raw('COUNT(*) as numberUser'))
+            ->whereYear('created_at', $request->input("year"))
+            ->where('role', User::Candidate)
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->pluck('numberUser', 'month')
+            ->toArray();
+        return response()->json([
+            'users' => $this->formatStatisticData($users),
+            'ordersDataVND' => $this->formatStatisticData($ordersDataVND),
+            'ordersDataUSD' => $this->formatStatisticData($ordersDataUSD),
+        ]);
+    }
+
+    private function formatStatisticData($data)
+    {
+        for ($i = 1; $i <= 12; $i++) {
+            if (!array_key_exists($i, $data)) {
+                $data[$i] = 0;
+            }
+        }
+        ksort($data);
+
+        return $data;
+    }
+
     public function createOrder(Request $request)
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
