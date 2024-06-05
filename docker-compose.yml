@@ -1,0 +1,71 @@
+version: '3.8'
+
+networks:
+  sinhthanh:
+    name: sinhthanh
+
+services:
+  sinhthanh-redis:
+    image: redis
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    networks:
+      - sinhthanh
+    restart: unless-stopped
+    volumes:
+      - ./cache/redis:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-AoWUJnZWx3kAurP}
+
+  sinhthanh-mongo:
+    image: mongo:4.4.6
+    ports:
+      - '27017:27017'
+    networks:
+      - sinhthanh
+    restart: unless-stopped
+    volumes:
+      - ./cache/mongo:/data/db
+    command: mongod --quiet --logpath /dev/null
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-12345678}
+
+  sinhthanh-mysql:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-your_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-your_database}
+    networks:
+      - sinhthanh
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./cache/mysql:/var/lib/mysql
+
+  sinhthanh-php:
+    image: php:7.4-apache
+    restart: unless-stopped
+    volumes:
+      - ./your_php_code:/var/www/html
+    ports:
+      - '8080:80'
+    networks:
+      - sinhthanh
+    environment:
+      MYSQL_HOST: sinhthanh-mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: your_password
+      MYSQL_DATABASE: your_database
+    command: ["apachectl", "-D", "FOREGROUND"]
+    depends_on:
+      - sinhthanh-redis
+      - sinhthanh-mongo
+      - sinhthanh-mysql

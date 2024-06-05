@@ -151,3 +151,16 @@ Route::group(
         Route::get('/index', HomeController::class . '@getAnalysic');
     }
 );
+
+// partner
+Route::group(
+    [
+        'prefix' => 'contact',
+        'as' => 'contact.',
+    ],
+    function () {
+        Route::get('/list', HomeController::class . '@getListContact');
+        Route::post('/create', HomeController::class . '@createContact')->middleware('auth:api', 'CheckAdmin');
+        Route::delete('/delete/{id}', HomeController::class . '@deleteContact')->middleware('auth:api', 'CheckAdmin');
+    }
+);

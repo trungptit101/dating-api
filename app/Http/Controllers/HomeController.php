@@ -10,6 +10,7 @@ use App\Models\UserDating;
 use App\Models\QuestionnaireUser;
 use App\Models\Question;
 use App\Models\Orders;
+use App\Models\Contacts;
 use App\Models\PaymentPackage;
 
 //import the Validator
@@ -20,6 +21,57 @@ use Facade\Ignition\Support\Packagist\Package;
 
 class HomeController extends Controller
 {
+    public function getListContact(Request $request)
+    {
+        $contacts = Contacts::query()
+            ->orderBy("id", "desc")
+            ->paginate($request->input("perPage"), ["*"], "page", $request->input("page"));
+        return response()->json([
+            "data" => $contacts,
+            "code" => 200
+        ], 200);
+    }
+
+    public function deleteContact($id)
+    {
+        Contacts::query()->where('id', $id)->delete();
+        return response()->json([
+            "message" => "Delete contact successfully!",
+            "code" => 200
+        ], 200);
+    }
+
+    public function createContact(Request $request)
+    {
+        $rules = [
+            "email" => "required",
+            "contact" => "required",
+        ];
+        $message = [
+            "email.required" => "Email is required!",
+            "contact.required" => "Contact is required!",
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $message);
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors(),
+            ], 422);
+        }
+
+        Contacts::create([
+            "email" => $request->email,
+            "contact" => $request->contact,
+            "issue" => $request->issue,
+            "description" => $request->description,
+        ]);
+
+        return response()->json([
+            "message" => "Create contact us successfully!",
+            "code" => 200
+        ], 200);
+    }
+
     public function getAnalysic(Request $request)
     {
         $ordersDataVND = Orders::select(\DB::raw('month(updated_at) as month'), \DB::raw('SUM(price) as totalMoney'))
