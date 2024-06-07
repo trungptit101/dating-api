@@ -62,6 +62,7 @@ Route::group(
         Route::post('/create', QuestionController::class . '@createQuestion');
         Route::post('/finish-survey', QuestionController::class . '@finishSurveyQuestion');
         Route::put('/update/{id}', QuestionController::class . '@updateQuestion');
+        Route::post('/update-order', QuestionController::class . '@updateOrder');
         Route::put('/update-questionaire-user/{id}', QuestionController::class . '@updateQuestionaireUser');
         Route::delete('/delete/{id}', QuestionController::class . '@deleteQuestion');
         Route::get('/settings-filter', QuestionController::class . '@getSettingsFilter');
@@ -140,7 +141,7 @@ Route::group(
     }
 );
 
-// partner
+// analysic
 Route::group(
     [
         'prefix' => 'analysic',

@@ -162,7 +162,7 @@ class UserApiController extends Controller
         //validate the request
         $rules = [
             "email" => "required|email|exists:users",
-            "password" => "required|min:6",
+            "password" => "required",
         ];
 
         $customMessage = [
@@ -170,7 +170,6 @@ class UserApiController extends Controller
             "email.email" => "Email is invalid",
             "email.exists" => "Email do not exists",
             "password.required" => "Password is required",
-            "password.min" => "Password must be at least 6 characters",
         ];
 
         $validation = Validator::make($req->all(), $rules, $customMessage);

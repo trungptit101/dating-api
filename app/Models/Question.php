@@ -10,7 +10,7 @@ class Question extends Model
     protected $table = 'survey_question';
 
     protected $fillable = [
-        'question', 'slug', 'options', 'type', 'description', 'background'
+        'question', 'slug', 'options', 'type', 'description', 'background', 'question_en', 'description_en'
     ];
 
     public function answers()

@@ -19,8 +19,8 @@ class QuestionController extends Controller
     public function listQuestion(Request $request)
     {
         $questions = Question::query()
-            ->orderBy("id", "asc")
-            ->paginate($request->input("perPage"), ["*"], "page", $request->input("page"));;
+            ->orderBy("order", "asc")->get();
+        // ->paginate($request->input("perPage"), ["*"], "page", $request->input("page"));;
         return response()->json([
             "data" => $questions,
             "code" => 200
@@ -55,6 +55,17 @@ class QuestionController extends Controller
         ], 200);
     }
 
+    public function updateOrder(Request $request)
+    {
+        $questionIds = $request->input('questionIds');
+        $order = 1;
+
+        foreach ($questionIds as $questionId) {
+            Question::where('id', $questionId)->update(['order' => $order]);
+            $order++;
+        }
+    }
+
     public function upSertSettingsFilter(Request $request)
     {
         if ($request->input("id")) {
@@ -74,7 +85,7 @@ class QuestionController extends Controller
 
     public function listQuestionnaire()
     {
-        $questionsAll = Question::with("answers")->orderBy("id", "asc")
+        $questionsAll = Question::with("answers")->orderBy("order", "asc")
             ->get();
         $questionaireUser = collect($questionsAll)->map(function ($question) {
             $answers = $this->getAnswer($question->answers);
@@ -171,10 +182,13 @@ class QuestionController extends Controller
 
         $question = Question::find($id);
         $question->question = $request->question;
+        $question->question_en = $request->question_en;
         $question->slug = Str::slug($request->question);
         $question->type = $request->type;
         $question->options = json_encode($options);
         $question->background = $request->background;
+        $question->description = $request->description;
+        $question->description_en = $request->description_en;
         $question->save();
 
         return response()->json([
