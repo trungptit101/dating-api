@@ -174,6 +174,7 @@ class QuestionController extends Controller
         $question->slug = Str::slug($request->question);
         $question->type = $request->type;
         $question->options = json_encode($options);
+        $question->background = $request->background;
         $question->save();
 
         return response()->json([
