@@ -123,6 +123,7 @@ class UserApiController extends Controller
             "phone" => $req->phone,
             "gender" => $req->gender,
             "lookingGender" => $req->lookingGender,
+            "image_dating" => json_encode($req->image_dating),
             "password" => Hash::make($req->password),
         ]);
 

@@ -34,7 +34,9 @@ class User extends Authenticatable
         'height',
         'skin_color',
         'blood_group',
-        'eye_color'
+        'phone',
+        'eye_color',
+        'image_dating'
     ];
 
     const Admin = 1;
