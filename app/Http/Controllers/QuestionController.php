@@ -129,10 +129,12 @@ class QuestionController extends Controller
             });
         }
 
+        $count = Question::query()->count();
         Question::create([
             "question" => $request->question,
             "slug" => Str::slug($request->question),
             "type" => $request->type,
+            "order" => $count + 1,
             "background" => $request->background,
             "description" => $request->description,
             "options" => json_encode($options),
