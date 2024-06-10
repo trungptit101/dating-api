@@ -117,6 +117,7 @@ class UserApiController extends Controller
         }
 
         $user = User::create([
+            "avatar" => $req->avatar,
             "name" => $req->name,
             "email" => $req->email,
             "age" => $req->age,
