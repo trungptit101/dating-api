@@ -18,7 +18,7 @@ class PaymentPackageController extends Controller
 
     public function listPackage()
     {
-        $paymentPackage = PaymentPackage::query()->orderBy("price")->get();
+        $paymentPackage = PaymentPackage::query()->get();
         return response()->json([
             "data" => $paymentPackage,
             "code" => 200
@@ -29,13 +29,15 @@ class PaymentPackageController extends Controller
     {
         $rules = [
             "months" => "required",
-            "price" => "required",
-            "unit" => "required",
+            "gender" => "required",
+            "price_paypal" => "required",
+            "price_vnpay" => "required",
         ];
         $message = [
             "months.required" => "Months is required!",
-            "price.required" => "Price is required!",
-            "unit.required" => "Unit is required!",
+            "gender.required" => "Gender is required!",
+            "price_paypal.required" => "Price USD is required!",
+            "price_vnpay.required" => "Price VNĐ is required!",
         ];
 
         $validator = Validator::make($request->all(), $rules, $message);
@@ -46,8 +48,9 @@ class PaymentPackageController extends Controller
         }
         PaymentPackage::create([
             "months" => $request->input("months"),
-            "price" => $request->input("price"),
-            "unit" => $request->input("unit"),
+            "gender" => $request->input("gender"),
+            "price_paypal" => $request->input("price_paypal"),
+            "price_vnpay" => $request->input("price_vnpay"),
         ]);
 
         return response()->json([
@@ -58,27 +61,11 @@ class PaymentPackageController extends Controller
 
     public function updatePackage(Request $request, $id)
     {
-        $rules = [
-            "months" => "required",
-            "price" => "required",
-            "unit" => "required",
-        ];
-        $message = [
-            "months.required" => "Months is required!",
-            "price.required" => "Price is required!",
-            "unit.required" => "Unit is required!",
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $message);
-        if ($validator->fails()) {
-            return response()->json([
-                "message" => $validator->errors(),
-            ], 422);
-        }
         $package = PaymentPackage::find($id);
+        $package->gender = $request->gender;
         $package->months = $request->months;
-        $package->price = $request->price;
-        $package->unit = $request->unit;
+        $package->price_paypal = $request->price_paypal;
+        $package->price_vnpay = $request->price_vnpay;
         $package->save();
 
         return response()->json([

@@ -100,7 +100,7 @@ class UserApiController extends Controller
             "email.required" => "Email is required",
             "phone.required" => "Phone is required",
             "email.email" => "Email is invalid",
-            "email.unique" => "Email is already taken",
+            "email.unique" => "Email is already exist",
             "password.required" => "Password is required",
             "password.min" => "Password must be at least 6 characters",
             "age.required" => "Age is required",

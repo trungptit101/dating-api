@@ -123,6 +123,8 @@ Route::group(
     ],
     function () {
         Route::post('/create', HomeController::class . '@createOrder');
+        Route::post('/create-paypal', HomeController::class . '@createOrderPaypal');
+        Route::post('/cancel-paypal', HomeController::class . '@cancelOrderPaypal');
         Route::get('/detail', HomeController::class . '@getOrderDetail');
     }
 );

@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use Facade\Ignition\Support\Packagist\Package;
 
+use function PHPUnit\Framework\isEmpty;
+
 class HomeController extends Controller
 {
     public function getListContact(Request $request)
@@ -125,9 +127,9 @@ class HomeController extends Controller
                 "message" => "Create order fail!",
             ], 400);
         $vnp_TxnRef = rand(1000, 10000000); //Mã giao dịch thanh toán tham chiếu của merchant
-        $vnp_Amount = $package->price; // Số tiền thanh toán
-        $vnp_Locale = "en"; //Ngôn ngữ chuyển hướng thanh toán
-        $vnp_BankCode = "VNBANK"; //Mã phương thức thanh toán
+        $vnp_Amount = $package->price_vnpay; // Số tiền thanh toán
+        $vnp_Locale = "vi"; //Ngôn ngữ chuyển hướng thanh toán
+        $vnp_BankCode = $request->input("methodPaymentVnPay"); //Mã phương thức thanh toán
         $vnp_IpAddr = $request->ip(); //IP Khách hàng thanh toán
         $startTime = date("YmdHis");
         $expire = date('YmdHis', strtotime('+5 minutes', strtotime($startTime)));
@@ -138,7 +140,7 @@ class HomeController extends Controller
             "vnp_Amount" => $vnp_Amount * 100,
             "vnp_Command" => "pay",
             "vnp_CreateDate" => date('YmdHis'),
-            "vnp_CurrCode" => $package->unit,
+            "vnp_CurrCode" => "VND",
             "vnp_IpAddr" => $vnp_IpAddr,
             "vnp_Locale" => $vnp_Locale,
             "vnp_OrderInfo" => "Thanh toan GD: " . $vnp_TxnRef,
@@ -175,9 +177,9 @@ class HomeController extends Controller
         Orders::create([
             "userId" => Auth::user()->id,
             "packageId" => $package->id,
-            "price" => $package->price,
+            "price" => $package->price_vnpay,
             "months" => $package->months,
-            "unit" => $package->unit,
+            "unit" => "VNPAY",
             "code" => $vnp_TxnRef,
             "payment_status" => Orders::PAYMENT_STATUS_INPROGRESS,
         ]);
@@ -187,17 +189,60 @@ class HomeController extends Controller
         ], 200);
     }
 
+    public function createOrderPaypal(Request $request)
+    {
+        $package = PaymentPackage::find($request->input("id"));
+        $vnp_TxnRef = rand(1000, 10000000); //Mã giao dịch thanh toán tham chiếu của merchant
+        $order = Orders::create([
+            "userId" => Auth::user()->id,
+            "packageId" => $package->id,
+            "price" => $package->price_paypal,
+            "months" => $package->months,
+            "unit" => "PAYPAL",
+            "code" => $vnp_TxnRef,
+            "payment_status" => Orders::PAYMENT_STATUS_COMPLETE,
+        ]);
+        return response()->json([
+            "order" => $order,
+            "code" => 200
+        ], 200);
+    }
+
+    public function cancelOrderPaypal(Request $request)
+    {
+        $package = PaymentPackage::find($request->input("id"));
+        $vnp_TxnRef = rand(1000, 10000000); //Mã giao dịch thanh toán tham chiếu của merchant
+        $order = Orders::create([
+            "userId" => Auth::user()->id,
+            "packageId" => $package->id,
+            "price" => $package->price_paypal,
+            "months" => $package->months,
+            "unit" => "PAYPAL",
+            "code" => $vnp_TxnRef,
+            "payment_status" => Orders::PAYMENT_STATUS_CANCEL,
+        ]);
+    }
+
 
     public function getOrderDetail(Request $request)
     {
         if ($request->input("vnp_TxnRef")) {
-            $order = Orders::query()->where("userId", Auth::user()->id)->where("code", $request->input("vnp_TxnRef"))->first();
+            $order = Orders::query()
+                ->where("userId", Auth::user()->id)
+                ->where("payment_status", Orders::PAYMENT_STATUS_COMPLETE)
+                ->where("code", $request->input("vnp_TxnRef"))
+                ->orderBy("created_at", "desc")
+                ->first();
         } else {
-            $order = Orders::query()->where("userId", Auth::user()->id)->first();
+            $order = Orders::query()
+                ->where("userId", Auth::user()->id)
+                ->where("payment_status", Orders::PAYMENT_STATUS_COMPLETE)
+                ->orderBy("created_at", "desc")
+                ->first();
         }
         if (empty($order))
             return response()->json([
-                "message" => "fail!",
+                "message" => "Payment failed!",
                 "order" => $order
             ], 400);
         if ($order->payment_status != Orders::PAYMENT_STATUS_INPROGRESS) {
@@ -207,8 +252,9 @@ class HomeController extends Controller
             } else $statusMsg = "completed";
             return response()->json([
                 "message" => "This order has been " . $statusMsg . "!",
+                "status" => $statusMsg,
                 "order" => $order,
-            ], 400);
+            ], 200);
         }
         $status = $order->payment_status;
         if ($request->input('vnp_ResponseCode') == '00' && $request->input('vnp_TransactionStatus') == '00') {
