@@ -48,6 +48,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Laravel Passport
 Route::post('/register', UserApiController::class . '@registerUser');
 Route::post('/process-after-register', UserApiController::class . '@processAfterRegister');
+Route::post('/forgot-password', UserApiController::class . '@forgotPassword');
+Route::post('/reset-password', UserApiController::class . '@resetPassword');
 Route::post('/login', UserApiController::class . '@loginUser');
 
 // question

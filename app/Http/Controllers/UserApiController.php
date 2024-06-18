@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\UserDating;
 use App\Models\QuestionnaireUser;
 use App\Models\Question;
+use App\Notifications\SendMailForgotPasswordOTP;
+use Illuminate\Support\Facades\Notification;
 
 //import the Validator
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +18,8 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use Facade\FlareClient\View;
 use Hash;
+
+use function PHPUnit\Framework\isEmpty;
 
 class UserApiController extends Controller
 {
@@ -237,5 +241,44 @@ class UserApiController extends Controller
         Auth::user()->avatar = $request->input("avatar");
         Auth::user()->save();
         return response()->json(Auth::user(), 200);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $user = User::query()->where('email', $request->email)->first();
+        if (empty($user))
+            return response()->json([
+                "message" => "Email not exists!",
+            ], 422);
+        $otp = rand(1000, 9999);
+        $data = [
+            'otp' => $otp,
+        ];
+        $user->otp = $otp;
+        $user->save();
+        Notification::route('mail', $request->email)->notify(
+            new SendMailForgotPasswordOTP($data)
+        );
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $user = User::query()->where('email', $request->email)->first();
+        if (empty($user))
+            return response()->json([
+                "message" => "User not exists!",
+            ], 422);
+
+        if ($user->otp == $request->otp && isset($user->otp)) {
+            $user->otp = "";
+            $user->password = Hash::make($request->password);
+            $user->save();
+            return response()->json([
+                "message" => "successfully!",
+            ], 200);
+        }
+        return response()->json([
+            "message" => "error",
+        ], 422);
     }
 }
