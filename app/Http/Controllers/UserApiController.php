@@ -137,7 +137,12 @@ class UserApiController extends Controller
             "image_dating" => implode(",", $url_image_dating),
             "password" => Hash::make($req->password)
         ]);
-
+        return response()->json([
+            "code" => 200
+        ], 201);
+    }
+    public function processAfterRegister(Request $req)
+    {
         if (Auth::attempt(["email" => $req->email, "password" => $req->password])) {
             $user = User::where("email", $req->email)->first();
             $access_token = $user->createToken($req->email)->accessToken;
