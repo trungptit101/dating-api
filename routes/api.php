@@ -8,6 +8,7 @@ use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\PaymentPackageController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DiscountStrategyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,5 +169,19 @@ Route::group(
         Route::get('/list', HomeController::class . '@getListContact')->middleware('auth:api', 'CheckAdmin');
         Route::post('/create', HomeController::class . '@createContact');
         Route::delete('/delete/{id}', HomeController::class . '@deleteContact')->middleware('auth:api', 'CheckAdmin');
+    }
+);
+
+// strategy
+Route::group(
+    [
+        'prefix' => 'strategy',
+        'as' => 'strategy.',
+    ],
+    function () {
+        Route::get('/list', DiscountStrategyController::class . '@listStrategies')->middleware('auth:api');
+        Route::post('/create', DiscountStrategyController::class . '@createStrategy')->middleware('auth:api', 'CheckAdmin');
+        Route::put('/update/{id}', DiscountStrategyController::class . '@updateStrategy')->middleware('auth:api', 'CheckAdmin');
+        Route::delete('/delete/{id}', DiscountStrategyController::class . '@deleteStrategy')->middleware('auth:api', 'CheckAdmin');
     }
 );
