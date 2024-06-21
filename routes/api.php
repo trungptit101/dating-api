@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentPackageController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DiscountStrategyController;
+use App\Http\Controllers\InternetBankingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -129,7 +130,11 @@ Route::group(
         Route::post('/create', HomeController::class . '@createOrder');
         Route::post('/create-paypal', HomeController::class . '@createOrderPaypal');
         Route::post('/cancel-paypal', HomeController::class . '@cancelOrderPaypal');
+        Route::post('/payment-banking', HomeController::class . '@paymentBanking');
         Route::get('/detail', HomeController::class . '@getOrderDetail');
+        Route::get('/banking-detail', HomeController::class . '@getOrderBankingDetail');
+        Route::get('/requests-banking', HomeController::class . '@getRequestBanking')->middleware('CheckAdmin');
+        Route::post('/finish', HomeController::class . '@finishRequestBanking')->middleware('CheckAdmin');
     }
 );
 
@@ -183,5 +188,19 @@ Route::group(
         Route::post('/create', DiscountStrategyController::class . '@createStrategy')->middleware('auth:api', 'CheckAdmin');
         Route::put('/update/{id}', DiscountStrategyController::class . '@updateStrategy')->middleware('auth:api', 'CheckAdmin');
         Route::delete('/delete/{id}', DiscountStrategyController::class . '@deleteStrategy')->middleware('auth:api', 'CheckAdmin');
+    }
+);
+
+// internet banking
+Route::group(
+    [
+        'prefix' => 'internet-banking',
+        'as' => 'internet-banking.',
+    ],
+    function () {
+        Route::get('/list', InternetBankingController::class . '@list')->middleware('auth:api');
+        Route::post('/create', InternetBankingController::class . '@create')->middleware('auth:api', 'CheckAdmin');
+        Route::put('/update/{id}', InternetBankingController::class . '@update')->middleware('auth:api', 'CheckAdmin');
+        Route::delete('/delete/{id}', InternetBankingController::class . '@delete')->middleware('auth:api', 'CheckAdmin');
     }
 );

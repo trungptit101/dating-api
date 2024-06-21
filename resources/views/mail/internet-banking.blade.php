@@ -32,7 +32,8 @@
                 <tbody>
                     <tr style="height: 0;">
                         <td>
-                            <img alt="" src="https://visicupid.com/static/img/logo-text-white.9b657d5f.png" height="120" />
+                            <img alt="" src="https://visicupid.com/static/img/logo-text-white.9b657d5f.png"
+                                height="120" />
                         </td>
                     </tr>
                 </tbody>
@@ -54,7 +55,7 @@
                 font-weight: 500;
                 color: #1f1f1f;
               ">
-                        Your OTP
+                        Order Notification Candidate
                     </h1>
                     <p style="
                 margin: 0;
@@ -62,7 +63,7 @@
                 font-size: 16px;
                 font-weight: 500;
               ">
-                        Hey {{ $data['name'] }},
+                        Hi Jenny Pham,
                     </p>
                     <p style="
                 margin: 0;
@@ -70,22 +71,10 @@
                 font-weight: 500;
                 letter-spacing: 0.56px;
               ">
-                        Thank you for choosing Visicupid Company. Use the following OTP
-                        to reset password. OTP is
-                        valid for
-                        <span style="font-weight: 600; color: #1f1f1f;">5 minutes</span>.
-                        Do not share this code with others, including Visicupid
-                        employees.
-                    </p>
-                    <p style="
-                margin: 0;
-                margin-top: 30px;
-                font-size: 40px;
-                font-weight: 600;
-                letter-spacing: 25px;
-                color: #ba3d4f;
-              ">
-                        {{ $data['otp'] }}
+                        Candidate <span style="font-weight: 600; color: #1f1f1f;">{{ $data['candidate'] }}</span> just
+                        paid the invoice {{ $data['amount'] }}{{ $data['unit'] }} with content
+                        <span style="font-weight: 600; color: #1f1f1f;">{{ $data['content'] }}</span>.
+                        Please check your bank account and confirm.
                     </p>
                 </div>
             </div>
@@ -99,7 +88,8 @@
             color: #8c8c8c;
           ">
                 Need help? Ask at
-                <a href="mailto:jenbusiness.sg@gmail.com" style="color: #499fb6; text-decoration: none;">jenbusiness.sg@gmail.com</a>
+                <a href="mailto:jenbusiness.sg@gmail.com"
+                    style="color: #499fb6; text-decoration: none;">jenbusiness.sg@gmail.com</a>
             </p>
         </main>
 
@@ -124,15 +114,20 @@
             </p>
             <div style="margin: 0; margin-top: 16px;">
                 <a href="https://www.facebook.com/Vietsyncupid" target="_blank" style="display: inline-block;">
-                    <img width="36px" alt="Facebook" src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661502815169_682499/email-template-icon-facebook" />
+                    <img width="36px" alt="Facebook"
+                        src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661502815169_682499/email-template-icon-facebook" />
                 </a>
                 <a href="" target="_blank" style="display: inline-block; margin-left: 8px;">
-                    <img width="36px" alt="Instagram" src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661504218208_684135/email-template-icon-instagram" /></a>
+                    <img width="36px" alt="Instagram"
+                        src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661504218208_684135/email-template-icon-instagram" /></a>
                 <a href="" target="_blank" style="display: inline-block; margin-left: 8px;">
-                    <img width="36px" alt="Twitter" src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503043040_372004/email-template-icon-twitter" />
+                    <img width="36px" alt="Twitter"
+                        src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503043040_372004/email-template-icon-twitter" />
                 </a>
-                <a href="https://youtube.com/@jenniferpham7775?si=UEU-82YSrtM8s6qC" target="_blank" style="display: inline-block; margin-left: 8px;">
-                    <img width="36px" alt="Youtube" src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503195931_210869/email-template-icon-youtube" /></a>
+                <a href="https://youtube.com/@jenniferpham7775?si=UEU-82YSrtM8s6qC" target="_blank"
+                    style="display: inline-block; margin-left: 8px;">
+                    <img width="36px" alt="Youtube"
+                        src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503195931_210869/email-template-icon-youtube" /></a>
             </div>
             <p style="margin: 0; margin-top: 16px; color: #434343;">
                 Copyright © 2024 Company. All rights reserved.

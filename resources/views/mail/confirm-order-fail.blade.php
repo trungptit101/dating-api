@@ -54,7 +54,7 @@
                 font-weight: 500;
                 color: #1f1f1f;
               ">
-                        Your OTP
+                        Order Notification Rejected
                     </h1>
                     <p style="
                 margin: 0;
@@ -62,7 +62,7 @@
                 font-size: 16px;
                 font-weight: 500;
               ">
-                        Hey {{ $data['name'] }},
+                        Hi {{ $data['name'] }},
                     </p>
                     <p style="
                 margin: 0;
@@ -70,22 +70,7 @@
                 font-weight: 500;
                 letter-spacing: 0.56px;
               ">
-                        Thank you for choosing Visicupid Company. Use the following OTP
-                        to reset password. OTP is
-                        valid for
-                        <span style="font-weight: 600; color: #1f1f1f;">5 minutes</span>.
-                        Do not share this code with others, including Visicupid
-                        employees.
-                    </p>
-                    <p style="
-                margin: 0;
-                margin-top: 30px;
-                font-size: 40px;
-                font-weight: 600;
-                letter-spacing: 25px;
-                color: #ba3d4f;
-              ">
-                        {{ $data['otp'] }}
+                        Your order has been rejected by admin and does not match. We invite you to continue the process <a href="https://visicupid.com/payment/upgrade" style="font-weight: 600; color: #1f1f1f;">here</a>
                     </p>
                 </div>
             </div>

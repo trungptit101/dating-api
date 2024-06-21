@@ -253,6 +253,7 @@ class UserApiController extends Controller
         $otp = rand(1000, 9999);
         $data = [
             'otp' => $otp,
+            'name' => $user->name,
         ];
         $user->otp = $otp;
         $user->save();

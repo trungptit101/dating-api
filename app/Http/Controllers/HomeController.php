@@ -13,6 +13,11 @@ use App\Models\Orders;
 use App\Models\Contacts;
 use App\Models\PaymentPackage;
 
+use App\Notifications\SendMailPaymentInternetBanking;
+use App\Notifications\SendMailConfirmOrderSuccess;
+use App\Notifications\SendMailConfirmOrderFail;
+use Illuminate\Support\Facades\Notification;
+
 //import the Validator
 use Illuminate\Support\Facades\Validator;
 
@@ -145,7 +150,7 @@ class HomeController extends Controller
             "vnp_Locale" => $vnp_Locale,
             "vnp_OrderInfo" => "Thanh toan GD: " . $vnp_TxnRef,
             "vnp_OrderType" => "other",
-            "vnp_ReturnUrl" => $request->input("returnUrl") . "/#/payment/complete",
+            "vnp_ReturnUrl" => $request->input("returnUrl") . "/payment/complete",
             "vnp_TxnRef" => $vnp_TxnRef,
             "vnp_ExpireDate" => $expire
         );
@@ -208,6 +213,74 @@ class HomeController extends Controller
         ], 200);
     }
 
+    public function paymentBanking(Request $request)
+    {
+        $package = PaymentPackage::find($request->input("id"));
+        $vnp_TxnRef = rand(1000, 10000000); //Mã giao dịch thanh toán tham chiếu của merchant
+        $order = Orders::create([
+            "userId" => Auth::user()->id,
+            "packageId" => $package->id,
+            "lang" => $request->input("lang"),
+            "price" => $request->input("lang") == "en" ? $package->price_paypal : $package->price_vnpay,
+            "months" => $package->months,
+            "unit" => "INTERNET-BANKING",
+            "code" => $vnp_TxnRef,
+            "content" => $request->input("content"),
+            "payment_status" => Orders::PAYMENT_STATUS_INPROGRESS,
+        ]);
+
+        $data = [
+            'candidate' => Auth::user()->name,
+            'content' => $request->input("content"),
+            'amount' => $request->input("content"),
+            'unit' => $request->input("lang") == "en" ? "USD" : "VNĐ",
+        ];
+        Notification::route('mail', 'jenbusiness.sg@gmail.com')->notify(
+            new SendMailPaymentInternetBanking($data)
+        );
+        return response()->json([
+            "order" => $order,
+            "code" => 200
+        ], 200);
+    }
+
+    public function getRequestBanking(Request $request)
+    {
+        $orders = Orders::query()
+            ->with("user")
+            ->where("unit", "INTERNET-BANKING")
+            ->orderBy("id", "desc")
+            ->paginate($request->input("perPage"), ["*"], "page", $request->input("page"));
+        return response()->json([
+            "data" => $orders,
+            "code" => 200
+        ], 200);
+    }
+
+    public function finishRequestBanking(Request $request)
+    {
+        $order = Orders::find($request->id);
+        $order->payment_status = $request->status;
+        $order->save();
+
+        $user = User::query()->where('id', $order->userId)->first();
+        $data = [
+            'name' => $user->name,
+        ];
+        if ($request->status == 2) {
+            Notification::route('mail', $user->email)->notify(
+                new SendMailConfirmOrderFail($data)
+            );
+        } else {
+            Notification::route('mail', $user->email)->notify(
+                new SendMailConfirmOrderSuccess($data)
+            );
+        }
+        return response()->json([
+            "code" => 200
+        ], 200);
+    }
+
     public function cancelOrderPaypal(Request $request)
     {
         $package = PaymentPackage::find($request->input("id"));
@@ -266,6 +339,20 @@ class HomeController extends Controller
         $order->save();
         return response()->json([
             "message" => "",
+            "order" => $order
+        ], 200);
+    }
+
+    public function getOrderBankingDetail(Request $request)
+    {
+        $order = Orders::query()
+            ->where("userId", Auth::user()->id)
+            ->where("payment_status", Orders::PAYMENT_STATUS_INPROGRESS)
+            ->where("unit", "INTERNET-BANKING")
+            ->orderBy("created_at", "desc")
+            ->first();
+        return response()->json([
+            "message" => "Payment failed!",
             "order" => $order
         ], 200);
     }

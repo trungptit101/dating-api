@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SendMailForgotPasswordOTP extends Notification
+class SendMailConfirmOrderFail extends Notification
 {
     use Queueable;
     protected $data;
@@ -42,8 +42,8 @@ class SendMailForgotPasswordOTP extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage())
-            ->view('mail.forgot-password', ['data' => $this->data])
-            ->subject('Visicupid OTP');
+            ->view('mail.confirm-order-fail.blade', ['data' => $this->data])
+            ->subject('Order');
     }
 
     /**

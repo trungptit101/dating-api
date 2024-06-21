@@ -22,5 +22,12 @@ class Orders extends Model
         'payment_status',
         "months",
         "unit",
+        "content",
+        "lang"
     ];
+
+    public function user()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'userId');
+    }
 }
