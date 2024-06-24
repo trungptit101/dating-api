@@ -89,7 +89,6 @@ class UserApiController extends Controller
 
     public function registerUser(Request $req)
     {
-        ini_set('max_execution_time', 300);
         $rules = [
             "name" => "required",
             "email" => "required|email|unique:users",
@@ -148,7 +147,6 @@ class UserApiController extends Controller
     }
     public function processAfterRegister(Request $req)
     {
-        ini_set('max_execution_time', 300);
         if (Auth::attempt(["email" => $req->email, "password" => $req->password])) {
             $user = User::where("email", $req->email)->first();
             $access_token = $user->createToken($req->email)->accessToken;
@@ -231,7 +229,6 @@ class UserApiController extends Controller
 
     public function updateUserProfile(Request $request)
     {
-        ini_set('max_execution_time', 300);
         Auth::user()->name = $request->input("name");
         Auth::user()->age = $request->input("age");
         Auth::user()->phone = $request->input("phone");
