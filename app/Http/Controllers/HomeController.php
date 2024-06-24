@@ -150,7 +150,7 @@ class HomeController extends Controller
             "vnp_Locale" => $vnp_Locale,
             "vnp_OrderInfo" => "Thanh toan GD: " . $vnp_TxnRef,
             "vnp_OrderType" => "other",
-            "vnp_ReturnUrl" => $request->input("returnUrl") . "/payment/complete",
+            "vnp_ReturnUrl" => $request->input("returnUrl") . "/#/payment/complete",
             "vnp_TxnRef" => $vnp_TxnRef,
             "vnp_ExpireDate" => $expire
         );
