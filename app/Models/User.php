@@ -36,7 +36,7 @@ class User extends Authenticatable
         'blood_group',
         'phone',
         'eye_color',
-        'image_dating'
+        // 'image_dating'
     ];
 
     const Admin = 1;

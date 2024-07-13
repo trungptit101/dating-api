@@ -120,15 +120,15 @@ class UserApiController extends Controller
             ], 422);
         }
 
-        if ($req->hasFile('image_dating')) {
-            $url_image_dating = array();
-            foreach ($req->file('image_dating') as $fileBusiness) {
-                $filenameBusiness = time() . '_' . $fileBusiness->getClientOriginalName();
-                $filePathBusiness = 'uploads/dating/';
-                $fileBusiness->move($filePathBusiness, $filenameBusiness);
-                array_push($url_image_dating, '/uploads/dating/' . $filenameBusiness);
-            }
-        }
+        // if ($req->hasFile('image_dating')) {
+        //     $url_image_dating = array();
+        //     foreach ($req->file('image_dating') as $fileBusiness) {
+        //         $filenameBusiness = time() . '_' . $fileBusiness->getClientOriginalName();
+        //         $filePathBusiness = 'uploads/dating/';
+        //         $fileBusiness->move($filePathBusiness, $filenameBusiness);
+        //         array_push($url_image_dating, '/uploads/dating/' . $filenameBusiness);
+        //     }
+        // }
 
         User::create([
             "avatar" => $req->avatar,
@@ -138,7 +138,7 @@ class UserApiController extends Controller
             "phone" => $req->phone,
             "gender" => $req->gender,
             "lookingGender" => $req->lookingGender,
-            "image_dating" => implode(",", $url_image_dating),
+            // "image_dating" => implode(",", $url_image_dating),
             "password" => Hash::make($req->password)
         ]);
         return response()->json([
