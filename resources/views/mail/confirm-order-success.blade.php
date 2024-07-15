@@ -71,7 +71,7 @@
                 font-weight: 500;
                 letter-spacing: 0.56px;
               ">
-                        Your order has been successfully verified by admin. We invite you to continue the process <a href="https://visicupid.com/partner/suggest" style="font-weight: 600; color: #1f1f1f;">here</a>
+                        Your order has been successfully verified by admin. We invite you to continue the process <a href="https://visicupid.com/#/partner/suggest" style="font-weight: 600; color: #1f1f1f;">here</a>
                     </p>
                 </div>
             </div>
