@@ -42,7 +42,7 @@ class SendMailConfirmOrderFail extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage())
-            ->view('mail.confirm-order-fail.blade', ['data' => $this->data])
+            ->view('mail.confirm-order-fail', ['data' => $this->data])
             ->subject('Order');
     }
 

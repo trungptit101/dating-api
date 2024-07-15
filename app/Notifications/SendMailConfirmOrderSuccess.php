@@ -42,7 +42,7 @@ class SendMailConfirmOrderSuccess extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage())
-            ->view('mail.confirm-order-success.blade', ['data' => $this->data])
+            ->view('mail.confirm-order-success', ['data' => $this->data])
             ->subject('Order');
     }
 
